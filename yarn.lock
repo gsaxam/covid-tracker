@@ -4319,6 +4319,10 @@ mkdirp@^0.5.1:
   dependencies:
     minimist "^1.2.5"
 
+moment@^2.24.0:
+  version "2.24.0"
+  resolved "https://artifactory.spectrumtoolbox.com/artifactory/api/npm/npm/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
+
 morgan@^1.9.0:
   version "1.10.0"
   resolved "https://artifactory.spectrumtoolbox.com/artifactory/api/npm/npm/morgan/-/morgan-1.10.0.tgz#091778abc1fc47cd3509824653dae1faab6b17d7"
@@ -4920,6 +4924,10 @@ react-native-screens@~2.2.0:
   resolved "https://artifactory.spectrumtoolbox.com/artifactory/api/npm/npm/react-native-screens/-/react-native-screens-2.2.0.tgz#cc4cdf17426fdda97ad93a5e812a1899390f1978"
   dependencies:
     debounce "^1.2.0"
+
+react-native-sound-player@^0.10.4:
+  version "0.10.4"
+  resolved "https://artifactory.spectrumtoolbox.com/artifactory/api/npm/npm/react-native-sound-player/-/react-native-sound-player-0.10.4.tgz#982822b23de39c05debe9c8aa60b0f7a0048799f"
 
 react-native-unimodules@~0.9.0:
   version "0.9.0"

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, ImageBackground } from 'react-native';
 import axios from 'axios';
+import moment from 'moment';
 const { width, height } = Dimensions.get('window');
 
 const background = require('./images/login1_bg.png');
@@ -12,35 +13,57 @@ const hospitalizedIcon = require('./images/hospitalized.png');
 const countiesIcon = require('./images/counties.png');
 
 class Main extends Component {
-  state = { covidData: {} };
+  constructor(props) {
+    super(props);
+    this.state = { covidData: {} };
+    this.covidURL = 'https://covid19.colorado.gov/case-data';
+    this.startingScrapePoint = 'Note: This summary only includes data through';
+    this.endingScrapePoint = 'outbreaks at residential and non-hospital health care facilities</p>';
+    this.getColoradoData = this.getColoradoData.bind(this); // use this to automatically bind 'this' inside the func
+  }
 
-  covidURL = 'https://covid19.colorado.gov/case-data';
-  scrapeDataBegin = 'Note: This summary only includes data through';
-  scrapeDataEnd = 'outbreaks at residential and non-hospital health care facilities</p>';
+  intervalID; // this will be used to track the setTimeout to run API calls continuously.
 
-  componentDidMount() {
-    axios.get(this.covidURL).then((res) => {
+  api = axios.create({
+    baseURL: this.covidURL,
+    timeout: 1000,
+    headers: { 'Cache-Control': 'no-store' }, // makes sure that cache is ignored.
+  });
+
+  getColoradoData() {
+    this.api.get(this.covidURL).then((res) => {
+      var covidData = {};
+      var localDate = moment().utc().local().format('YYYY-MM-DD HH:mm:ss');
+      console.log('Last Updated: ' + localDate + ' UTC');
       const data1 = res.data;
       var data = data1.substring(
-        data1.lastIndexOf(this.scrapeDataBegin) + 1,
-        data1.lastIndexOf(this.scrapeDataEnd)
+        data1.lastIndexOf(this.startingScrapePoint) + 1,
+        data1.lastIndexOf(this.endingScrapePoint)
       );
       data = data.replace(/(<([^>]+)>)/gi, ''); // remove all html tags.
       data = data.replace(/[a-z]/g, ''); // remove all letters.
       data = data.toString().split('\n'); // split string on new line characters.
       data.splice(0, 2); // remove first to elements of the array.
 
-      const covidData = {
-        cases: data[0].replace(/\D/g, ''), // remove all non numeric characters.
-        hospitalized: data[1].replace(/\D/g, ''),
-        counties: data[2].replace(/\D/g, ''),
-        peopleTested: data[3].replace(/\D/g, ''),
-        deaths: data[4].replace(/\D/g, ''),
-        outbreaks: data[5].replace(/\D/g, ''),
-      };
+      covidData['cases'] = data[0].replace(/\D/g, ''); // remove all non numeric characters.
+      covidData['hospitalized'] = data[1].replace(/\D/g, '');
+      covidData['counties'] = data[2].replace(/\D/g, '');
+      covidData['peopleTested'] = data[3].replace(/\D/g, '');
+      covidData['deaths'] = data[4].replace(/\D/g, '');
+      covidData['outbreaks'] = data[5].replace(/\D/g, '');
+      covidData['lastChecked'] = localDate;
       console.log(covidData);
       this.setState({ covidData }); // data is ready.
+      this.intervalID = setTimeout(this.getColoradoData.bind(this), 60000);
     });
+  }
+
+  componentDidMount() {
+    this.getColoradoData();
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.intervalID); // clear the setTimeout object.
   }
 
   render() {
@@ -96,7 +119,12 @@ class Main extends Component {
           </View>
           <View style={styles.container}>
             <View style={styles.signupWrap}>
-              <Text style={styles.accountText}>COVID-19 Colorado Statistics. Built by GSAXAM.</Text>
+              <Text style={styles.accountText}>
+                Last Checked: {this.state['covidData']['lastChecked']}{' '}
+              </Text>
+            </View>
+            <View style={styles.signupWrap}>
+              <Text style={styles.accountText}>COVID-19 Colorado Statistics. Built by gsaxam.</Text>
             </View>
           </View>
         </ImageBackground>

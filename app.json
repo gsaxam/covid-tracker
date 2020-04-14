@@ -1,7 +1,7 @@
 {
-   "expo": {
+  "expo": {
     "name": "Covid-Tracker",
-    "icon": "colo-icon.png",
+    "icon": "./images/colo-icon.png",
     "version": "1.0.0",
     "slug": "your-app-slug",
     "sdkVersion": "37.0.0",
@@ -13,5 +13,5 @@
       "package": "com.yourcompany.yourappname",
       "versionCode": 1
     }
-   }
- }
+  }
+}
